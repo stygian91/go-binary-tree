@@ -7,12 +7,14 @@ import (
 type ordered = constraints.Ordered
 
 type Tree[A ordered] struct {
-	Root Node[A]
+	Root  Node[A]
+	Count uint64
 }
 
 func New[A ordered](value A) Tree[A] {
 	return Tree[A]{
-		Root: Node[A]{Value: value},
+		Root:  Node[A]{Value: value},
+		Count: 1,
 	}
 }
 
@@ -49,6 +51,7 @@ func (this *Tree[A]) Add(value A) bool {
 		return true
 	}
 
+	this.Count += 1
 	return false
 }
 
@@ -59,6 +62,7 @@ func (this *Tree[A]) Remove(value A) bool {
 	}
 
 	parent := toDelete.Parent
+	this.Count -= 1
 
 	if toDelete.Left == nil && toDelete.Right == nil {
 		if parent == nil {
