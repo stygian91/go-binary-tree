@@ -26,12 +26,6 @@ func New[A ordered](value A) Tree[A] {
 	}
 }
 
-func NewEmpty[A ordered]() Tree[A] {
-	return Tree[A]{
-		Root: Node[A]{},
-	}
-}
-
 func Print[A ordered](node *Node[A], space int) {
 	_print(node, space)
 	fmt.Println()
@@ -211,5 +205,71 @@ func (this *Node[A]) Max() *Node[A] {
 		}
 
 		current = current.Right
+	}
+}
+
+func (this *Tree[A]) BreadthFirstVisit(cb func(*Node[A])) {
+	visited := map[*Node[A]]bool{}
+	queue := []*Node[A]{&this.Root}
+
+	addToQueue := func(node *Node[A]) {
+		if node == nil || visited[node] == true {
+			return
+		}
+
+		queue = append(queue, node)
+	}
+
+	for {
+		if len(queue) == 0 {
+			return
+		}
+
+		next := queue[0]
+		queue = queue[1:]
+
+		if visited[next] == true {
+			continue
+		}
+
+		visited[next] = true
+		cb(next)
+
+		addToQueue(next.Left)
+		addToQueue(next.Parent)
+		addToQueue(next.Right)
+	}
+}
+
+func (this *Tree[A]) DepthFirstVisit(cb func(*Node[A])) {
+	visited := map[*Node[A]]bool{}
+	stack := []*Node[A]{&this.Root}
+
+	addToQueue := func(node *Node[A]) {
+		if node == nil || visited[node] == true {
+			return
+		}
+
+		stack = append(stack, node)
+	}
+
+	for {
+		if len(stack) == 0 {
+			return
+		}
+
+		next := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if visited[next] == true {
+			continue
+		}
+
+		visited[next] = true
+		cb(next)
+
+		addToQueue(next.Right)
+		addToQueue(next.Parent)
+		addToQueue(next.Left)
 	}
 }
